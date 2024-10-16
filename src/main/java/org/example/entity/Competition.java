@@ -42,9 +42,9 @@ public class Competition implements Serializable {
     @Column(name = "distance", nullable = false)
     private double distance;
 
-//    @OneToMany(mappedBy = "competition")
-//    Set<Stage> stages;
-//
-//    @OneToMany(mappedBy = "competition")
-//    Set<GeneralResult> generalResults;
+    @OneToMany(mappedBy = "competition")
+    Set<Stage> stages;
+
+    @OneToMany(mappedBy = "competition")
+    Set<GeneralResult> generalResults;
 }

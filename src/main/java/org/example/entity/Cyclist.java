@@ -1,10 +1,6 @@
 package org.example.entity;
 
 
-
-
-
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -48,9 +44,9 @@ public class Cyclist implements Serializable {
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
-//    @OneToMany(mappedBy = "cyclist")
-//    Set<GeneralResult> generalResults;
-//
-//    @OneToMany(mappedBy = "cyclist")
-//    Set<Result> results;
+    @OneToMany(mappedBy = "cyclist")
+    Set<GeneralResult> generalResults;
+
+    @OneToMany(mappedBy = "cyclist")
+    Set<Result> results;
 }
