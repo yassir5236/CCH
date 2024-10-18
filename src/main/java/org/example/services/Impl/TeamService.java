@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -36,6 +37,11 @@ public class TeamService implements ITeamService {
     @Override
     public void createTeam(Team team) {
         teamRepository.save(team);
+    }
+
+    @Override
+    public Optional<Team> getTeamById(UUID id){
+        return teamRepository.findById(id);
     }
 
 }

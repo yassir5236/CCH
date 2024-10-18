@@ -105,6 +105,8 @@ import org.example.entity.Team;
 import org.example.repository.CompetitionRepository;
 import org.example.repository.CyclistRepository;
 import org.example.repository.TeamRepository;
+import org.example.services.CompetitionService;
+import org.example.services.CyclistService;
 import org.example.services.Impl.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -124,34 +126,31 @@ import java.util.concurrent.ThreadLocalRandom;
 public class App {
 
     @Autowired
-    private CompetitionRepository competitionRepository;
-
-    @Autowired
-    private TeamRepository teamRepository;
-
-    @Autowired
-    private CyclistRepository cyclistRepository;
-
+    private CompetitionService competitionService;
 
     @Autowired
     private TeamService teamService;
+
+    @Autowired
+    private CyclistService cyclistService;
+
 
     // Method to insert fake competitions for testing
     @Transactional
     public void insertFakeCompetitions() {
         try {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 5; i++) {
                 Competition competition = new Competition();
                 competition.setId(UUID.randomUUID());
 
 //                competition.set
                 competition.setDate(LocalDate.now().plusDays(ThreadLocalRandom.current().nextInt(1, 30)));
-                competition.setName("dfdfs ");
+                competition.setName("bbbbbbb ");
 
-                competition.setPlace("dssedwssed ");
+                competition.setPlace("cccccccc ");
                 competition.setDistance(0.14);
 
-                competitionRepository.save(competition);
+                competitionService.saveCompetition(competition);
             }
             System.out.println("Fake competitions inserted successfully!");
         } catch (Exception e) {
@@ -159,9 +158,9 @@ public class App {
         }
     }
 
-    // Method to display all competitions
+//     Method to display all competitions
     public void displayAllCompetitions() {
-        List<Competition> competitions = competitionRepository.findAll();
+        List<Competition> competitions = competitionService.getAllCompetitions();
         competitions.forEach(competition ->
                 System.out.println("Competition Name: " + competition.getName() + ", Place: " + competition.getPlace()));
     }
@@ -169,7 +168,7 @@ public class App {
 
     public void updateCompetition() {
         // Fetch all competitions
-        List<Competition> competitions = competitionRepository.findAll();
+        List<Competition> competitions = competitionService.getAllCompetitions();
 
         // Display the competitions to the user
         competitions.forEach(competition ->
@@ -188,7 +187,7 @@ public class App {
             UUID competitionId = UUID.fromString(competitionIdStr);
 
             // Check if the competition exists
-            Optional<Competition> competitionOpt = competitionRepository.findById(competitionId);
+            Optional<Competition> competitionOpt = competitionService.getCompetition(competitionId);
             if (competitionOpt.isPresent()) {
                 Competition competition = competitionOpt.get();
 
@@ -220,7 +219,7 @@ public class App {
                 }
 
                 // Save the updated competition
-                competitionRepository.save(competition);
+                competitionService.saveCompetition(competition);
                 System.out.println("Competition updated successfully.");
 
             } else {
@@ -236,7 +235,7 @@ public class App {
 
     public void DeleteCompetition() {
         // Fetch all competitions
-        List<Competition> competitions = competitionRepository.findAll();
+        List<Competition> competitions = competitionService.getAllCompetitions();
 
         // Display the competitions to the user
         competitions.forEach(competition ->
@@ -255,10 +254,10 @@ public class App {
             UUID competitionId = UUID.fromString(competitionIdStr);
 
             // Check if the competition exists
-            Optional<Competition> competitionOpt = competitionRepository.findById(competitionId);
+            Optional<Competition> competitionOpt = competitionService.getCompetition(competitionId);
             if (competitionOpt.isPresent()) {
                 // Delete the competition
-                competitionRepository.deleteById(competitionId);
+                competitionService.deleteCompetition(competitionId);
                 System.out.println("Competition deleted successfully.");
             } else {
                 System.out.println("Competition with ID " + competitionId + " not found.");
@@ -298,7 +297,7 @@ public class App {
             UUID teamId = UUID.fromString(teamIdStr);
 
             // Fetch the team by ID
-            Optional<Team> teamOpt = teamRepository.findById(teamId);
+            Optional<Team> teamOpt = teamService.getTeamById(teamId);
             if (teamOpt.isPresent()) {
                 Team team = teamOpt.get();
 
@@ -311,7 +310,7 @@ public class App {
                 cyclist.setTeam(team);
 
                 // Save the cyclist
-                cyclistRepository.save(cyclist);
+                cyclistService.saveCyclist(cyclist);
                 System.out.println("Cyclist added successfully.");
 
             } else {
@@ -340,7 +339,7 @@ public class App {
             UUID cyclistId = UUID.fromString(cyclistIdStr);
 
             // Rechercher le cycliste par ID
-            Optional<Cyclist> cyclistOpt = cyclistRepository.findById(cyclistId);
+            Optional<Cyclist> cyclistOpt = cyclistService.getCyclistById(cyclistId);
 
             // Vérifier si le cycliste existe
             if (cyclistOpt.isPresent()) {
@@ -367,7 +366,7 @@ public class App {
                 // Rechercher la nouvelle équipe
                 if (!teamIdStr.isBlank()) {
                     UUID teamId = UUID.fromString(teamIdStr);
-                    Optional<Team> teamOpt = teamRepository.findById(teamId);
+                    Optional<Team> teamOpt = teamService.getTeamById(teamId);
 
                     if (teamOpt.isPresent()) {
                         cyclist.setTeam(teamOpt.get());
@@ -377,7 +376,7 @@ public class App {
                 }
 
                 // Sauvegarder les modifications
-                cyclistRepository.save(cyclist);
+                cyclistService.saveCyclist(cyclist);
                 System.out.println("Cyclist updated successfully.");
             } else {
                 System.out.println("Cyclist with ID " + cyclistId + " not found.");
@@ -404,14 +403,12 @@ public class App {
             UUID cyclistId = UUID.fromString(cyclistIdStr);
 
             // Rechercher le cycliste par ID
-            Optional<Cyclist> cyclistOpt = cyclistRepository.findById(cyclistId);
+            Optional<Cyclist> cyclistOpt = cyclistService.getCyclistById(cyclistId);
 
             // Vérifier si le cycliste existe
             if (cyclistOpt.isPresent()) {
-                Cyclist cyclist = cyclistOpt.get();
 
-                // Supprimer le cycliste
-                cyclistRepository.delete(cyclist);
+                cyclistService.deleteCyclist(cyclistId);
                 System.out.println("Cyclist with ID " + cyclistId + " deleted successfully.");
             } else {
                 System.out.println("Cyclist with ID " + cyclistId + " not found.");
@@ -427,7 +424,7 @@ public class App {
 
     public void getAllCyclists() {
         // Récupérer tous les cyclistes
-        List<Cyclist> cyclists = cyclistRepository.findAll();
+        List<Cyclist> cyclists = cyclistService.getCyclists();
 
         // Vérifier si la liste est vide
         if (cyclists.isEmpty()) {
@@ -460,12 +457,12 @@ public class App {
 //        app.insertFakeCompetitions();
 
         // Retrieve TeamService bean
-//        TeamService teamService = context.getBean(TeamService.class);
+        TeamService teamService = context.getBean(TeamService.class);
 
         // Create a new team and save it
-//        Team newTeam = new Team();
-//        newTeam.setName("Wora");
-//        teamService.createTeam(newTeam);
+        Team newTeam = new Team();
+        newTeam.setName("hoooo");
+        teamService.createTeam(newTeam);
 
         // Fetch and display all teams
 //        teamService.getAllTeam().forEach(team -> System.out.println("Team Name: " + team.getName()));
@@ -481,7 +478,7 @@ public class App {
 
 //        app.updateCyclist();
 
-        app.getAllCyclists();
+//        app.getAllCyclists();
 
 
 
