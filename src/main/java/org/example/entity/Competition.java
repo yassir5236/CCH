@@ -22,9 +22,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @ToString
 public class Competition implements Serializable {
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.UUID)
+//    private UUID id;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id = UUID.randomUUID();
 
     @NotBlank(message = "Competition name is required")
     @Column(name = "competition_name", nullable = false)
