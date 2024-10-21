@@ -461,7 +461,7 @@ public class App {
 
         // Create a new team and save it
         Team newTeam = new Team();
-        newTeam.setName("hoooo");
+        newTeam.setName("ssdssd");
         teamService.createTeam(newTeam);
 
         // Fetch and display all teams
