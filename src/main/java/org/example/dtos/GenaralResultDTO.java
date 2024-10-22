@@ -12,13 +12,16 @@ import java.util.UUID;
 
 public record GenaralResultDTO(
 
-        @NotBlank(message = "cyclistId is required")
+        @NotNull(message = "cyclistId is required")
         UUID cyclistId,
-        @NotBlank(message = "competitionId is required")
+
+        @NotNull(message = "competitionId is required")
         UUID competitionId,
-        @NotBlank(message = "generalTime is required")
+
+        @NotNull(message = "generalTime is required")
         Duration generalTime,
-        @NotBlank(message = "general rank is required")
+
+        @NotNull(message = "general rank is required")
         int generalRank
 
         ) {

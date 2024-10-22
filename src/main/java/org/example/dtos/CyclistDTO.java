@@ -15,6 +15,7 @@ public record CyclistDTO(
 
         @NotBlank(message = "first name is required")
         String firstName,
+
         @NotBlank(message = "last name is required")
         String lastName,
 
@@ -25,7 +26,7 @@ public record CyclistDTO(
         String nationality,
 
 
-        @JoinColumn(name = "team_id", nullable = false)
+        @NotNull(message = "teamID is required ")
         UUID teamId
 
 

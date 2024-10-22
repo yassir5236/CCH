@@ -12,15 +12,16 @@ import java.util.UUID;
 
 public record ResultDTO(
 
-        @NotBlank(message = "cyclistID is required")
+        @NotNull(message = "cyclistID is required")
         UUID cyclistID,
-        @NotBlank(message = "stageId is required")
+
+        @NotNull(message = "stageId is required")
         UUID stageId,
-        @NotBlank(message = "stage is required")
-        Stage stage,
-        @NotBlank(message = "time is required")
+
+        @NotNull(message = "time is required")
         Duration time,
-        @NotBlank(message = "rank is required")
+
+        @NotNull(message = "rank is required")
         int rank
 ) {
 }

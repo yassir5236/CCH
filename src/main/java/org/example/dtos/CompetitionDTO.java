@@ -13,9 +13,16 @@ import java.util.Set;
 import java.util.UUID;
 
 public record CompetitionDTO(
+        @NotBlank(message = "name is required ")
         String name,
+
+        @NotNull(message = "date is required")
         LocalDate date,
+
+        @NotBlank(message = "place is required")
         String place,
+
+        @NotNull(message = "distance is required")
         double distance
 ) {
 }
