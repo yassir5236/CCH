@@ -99,6 +99,7 @@
 
 package org.example;
 
+import org.example.dtos.CyclistDTO;
 import org.example.entity.Competition;
 import org.example.entity.Cyclist;
 import org.example.entity.Team;
@@ -125,14 +126,20 @@ import java.util.concurrent.ThreadLocalRandom;
 @Component
 public class App {
 
-    @Autowired
-    private CompetitionService competitionService;
+
+    private final CompetitionService competitionService;
+
+    private final TeamService teamService;
+
+    private final CyclistService cyclistService;
 
     @Autowired
-    private TeamService teamService;
+    public App(CompetitionService competitionService, TeamService teamService, CyclistService cyclistService) {
+        this.competitionService = competitionService;
+        this.teamService = teamService;
+        this.cyclistService = cyclistService;
 
-    @Autowired
-    private CyclistService cyclistService;
+    }
 
 
     // Method to insert fake competitions for testing
@@ -158,7 +165,7 @@ public class App {
         }
     }
 
-//     Method to display all competitions
+    //     Method to display all competitions
     public void displayAllCompetitions() {
         List<Competition> competitions = competitionService.getAllCompetitions();
         competitions.forEach(competition ->
@@ -268,8 +275,6 @@ public class App {
     }
 
 
-
-
     public void insertCyclist() {
         Scanner scanner = new Scanner(System.in);
 
@@ -297,25 +302,12 @@ public class App {
             UUID teamId = UUID.fromString(teamIdStr);
 
             // Fetch the team by ID
-            Optional<Team> teamOpt = teamService.getTeamById(teamId);
-            if (teamOpt.isPresent()) {
-                Team team = teamOpt.get();
 
-                // Create a new Cyclist instance
-                Cyclist cyclist = new Cyclist();
-                cyclist.setFirstName(firstName);
-                cyclist.setLastName(lastName);
-                cyclist.setAge(age);
-                cyclist.setNationality(nationality);
-                cyclist.setTeam(team);
+            CyclistDTO cyclist = new CyclistDTO(firstName, lastName, age, nationality, teamId);
 
-                // Save the cyclist
-                cyclistService.saveCyclist(cyclist);
-                System.out.println("Cyclist added successfully.");
+            cyclistService.saveCyclist(cyclist);
+            System.out.println("Cyclist added successfully.");
 
-            } else {
-                System.out.println("Team with ID " + teamId + " not found.");
-            }
         } catch (DateTimeParseException e) {
             System.out.println("Invalid date format. Please enter the date in yyyy-MM-dd format.");
         } catch (IllegalArgumentException e) {
@@ -326,124 +318,118 @@ public class App {
     }
 
 
-
-    public void updateCyclist() {
-        Scanner scanner = new Scanner(System.in);
-
-        // Demander l'ID du cycliste à mettre à jour
-        System.out.println("Enter cyclist ID to update: ");
-        String cyclistIdStr = scanner.nextLine();
-
-        try {
-            // Convertir l'ID en UUID
-            UUID cyclistId = UUID.fromString(cyclistIdStr);
-
-            // Rechercher le cycliste par ID
-            Optional<Cyclist> cyclistOpt = cyclistService.getCyclistById(cyclistId);
-
-            // Vérifier si le cycliste existe
-            if (cyclistOpt.isPresent()) {
-                Cyclist cyclist = cyclistOpt.get();
-
-                // Demander les nouvelles informations
-                System.out.println("Enter new first name (current: " + cyclist.getFirstName() + "): ");
-                String firstName = scanner.nextLine();
-                System.out.println("Enter new last name (current: " + cyclist.getLastName() + "): ");
-                String lastName = scanner.nextLine();
-                System.out.println("Enter new age (YYYY-MM-DD format) (current: " + cyclist.getAge() + "): ");
-                String ageStr = scanner.nextLine();
-                System.out.println("Enter new nationality (current: " + cyclist.getNationality() + "): ");
-                String nationality = scanner.nextLine();
-                System.out.println("Enter new team ID (current team: " + cyclist.getTeam().getName() + "): ");
-                String teamIdStr = scanner.nextLine();
-
-                // Mettre à jour les informations si elles sont saisies (laisser inchangées sinon)
-                if (!firstName.isBlank()) cyclist.setFirstName(firstName);
-                if (!lastName.isBlank()) cyclist.setLastName(lastName);
-                if (!ageStr.isBlank()) cyclist.setAge(LocalDate.parse(ageStr));
-                if (!nationality.isBlank()) cyclist.setNationality(nationality);
-
-                // Rechercher la nouvelle équipe
-                if (!teamIdStr.isBlank()) {
-                    UUID teamId = UUID.fromString(teamIdStr);
-                    Optional<Team> teamOpt = teamService.getTeamById(teamId);
-
-                    if (teamOpt.isPresent()) {
-                        cyclist.setTeam(teamOpt.get());
-                    } else {
-                        System.out.println("Team with ID " + teamId + " not found.");
-                    }
-                }
-
-                // Sauvegarder les modifications
-                cyclistService.saveCyclist(cyclist);
-                System.out.println("Cyclist updated successfully.");
-            } else {
-                System.out.println("Cyclist with ID " + cyclistId + " not found.");
-            }
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid ID format. Please enter a valid UUID.");
-        } catch (Exception e) {
-            System.out.println("An error occurred while updating the cyclist: " + e.getMessage());
-        }
-    }
-
-
-
-
-    public void deleteCyclist() {
-        Scanner scanner = new Scanner(System.in);
-
-        // Demander l'ID du cycliste à supprimer
-        System.out.println("Enter cyclist ID to delete: ");
-        String cyclistIdStr = scanner.nextLine();
-
-        try {
-            // Convertir l'ID en UUID
-            UUID cyclistId = UUID.fromString(cyclistIdStr);
-
-            // Rechercher le cycliste par ID
-            Optional<Cyclist> cyclistOpt = cyclistService.getCyclistById(cyclistId);
-
-            // Vérifier si le cycliste existe
-            if (cyclistOpt.isPresent()) {
-
-                cyclistService.deleteCyclist(cyclistId);
-                System.out.println("Cyclist with ID " + cyclistId + " deleted successfully.");
-            } else {
-                System.out.println("Cyclist with ID " + cyclistId + " not found.");
-            }
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid cyclist ID format. Please enter a valid UUID.");
-        } catch (Exception e) {
-            System.out.println("An error occurred while deleting the cyclist: " + e.getMessage());
-        }
-    }
-
-
-
-    public void getAllCyclists() {
-        // Récupérer tous les cyclistes
-        List<Cyclist> cyclists = cyclistService.getCyclists();
-
-        // Vérifier si la liste est vide
-        if (cyclists.isEmpty()) {
-            System.out.println("No cyclists found in the system.");
-        } else {
-            // Afficher chaque cycliste
-            cyclists.forEach(cyclist -> {
-                System.out.println("Cyclist ID: " + cyclist.getId());
-                System.out.println("First Name: " + cyclist.getFirstName());
-                System.out.println("Last Name: " + cyclist.getLastName());
-                System.out.println("Age: " + cyclist.getAge());
-                System.out.println("Nationality: " + cyclist.getNationality());
-                System.out.println("Team: " + cyclist.getTeam().getName());
-                System.out.println("---------------------------------------");
-            });
-        }
-    }
-
-
+//    public void updateCyclist() {
+//        Scanner scanner = new Scanner(System.in);
+//
+//        // Demander l'ID du cycliste à mettre à jour
+//        System.out.println("Enter cyclist ID to update: ");
+//        String cyclistIdStr = scanner.nextLine();
+//
+//        try {
+//            // Convertir l'ID en UUID
+//            UUID cyclistId = UUID.fromString(cyclistIdStr);
+//
+//            // Rechercher le cycliste par ID
+//            Optional<Cyclist> cyclistOpt = cyclistService.getCyclistById(cyclistId);
+//
+//            // Vérifier si le cycliste existe
+//            if (cyclistOpt.isPresent()) {
+//                Cyclist cyclist = cyclistOpt.get();
+//
+//                // Demander les nouvelles informations
+//                System.out.println("Enter new first name (current: " + cyclist.getFirstName() + "): ");
+//                String firstName = scanner.nextLine();
+//                System.out.println("Enter new last name (current: " + cyclist.getLastName() + "): ");
+//                String lastName = scanner.nextLine();
+//                System.out.println("Enter new age (YYYY-MM-DD format) (current: " + cyclist.getAge() + "): ");
+//                String ageStr = scanner.nextLine();
+//                System.out.println("Enter new nationality (current: " + cyclist.getNationality() + "): ");
+//                String nationality = scanner.nextLine();
+//                System.out.println("Enter new team ID (current team: " + cyclist.getTeam().getName() + "): ");
+//                String teamIdStr = scanner.nextLine();
+//
+//                // Mettre à jour les informations si elles sont saisies (laisser inchangées sinon)
+//                if (!firstName.isBlank()) cyclist.setFirstName(firstName);
+//                if (!lastName.isBlank()) cyclist.setLastName(lastName);
+//                if (!ageStr.isBlank()) cyclist.setAge(LocalDate.parse(ageStr));
+//                if (!nationality.isBlank()) cyclist.setNationality(nationality);
+//
+//                // Rechercher la nouvelle équipe
+//                if (!teamIdStr.isBlank()) {
+//                    UUID teamId = UUID.fromString(teamIdStr);
+//                    Optional<Team> teamOpt = teamService.getTeamById(teamId);
+//
+//                    if (teamOpt.isPresent()) {
+//                        cyclist.setTeam(teamOpt.get());
+//                    } else {
+//                        System.out.println("Team with ID " + teamId + " not found.");
+//                    }
+//                }
+//
+//                // Sauvegarder les modifications
+//                cyclistService.saveCyclist(cyclist);
+//                System.out.println("Cyclist updated successfully.");
+//            } else {
+//                System.out.println("Cyclist with ID " + cyclistId + " not found.");
+//            }
+//        } catch (IllegalArgumentException e) {
+//            System.out.println("Invalid ID format. Please enter a valid UUID.");
+//        } catch (Exception e) {
+//            System.out.println("An error occurred while updating the cyclist: " + e.getMessage());
+//        }
+//    }
+//
+//
+//    public void deleteCyclist() {
+//        Scanner scanner = new Scanner(System.in);
+//
+//        // Demander l'ID du cycliste à supprimer
+//        System.out.println("Enter cyclist ID to delete: ");
+//        String cyclistIdStr = scanner.nextLine();
+//
+//        try {
+//            // Convertir l'ID en UUID
+//            UUID cyclistId = UUID.fromString(cyclistIdStr);
+//
+//            // Rechercher le cycliste par ID
+//            Optional<Cyclist> cyclistOpt = cyclistService.getCyclistById(cyclistId);
+//
+//            // Vérifier si le cycliste existe
+//            if (cyclistOpt.isPresent()) {
+//
+//                cyclistService.deleteCyclist(cyclistId);
+//                System.out.println("Cyclist with ID " + cyclistId + " deleted successfully.");
+//            } else {
+//                System.out.println("Cyclist with ID " + cyclistId + " not found.");
+//            }
+//        } catch (IllegalArgumentException e) {
+//            System.out.println("Invalid cyclist ID format. Please enter a valid UUID.");
+//        } catch (Exception e) {
+//            System.out.println("An error occurred while deleting the cyclist: " + e.getMessage());
+//        }
+//    }
+//
+//
+//    public void getAllCyclists() {
+//        // Récupérer tous les cyclistes
+//        List<Cyclist> cyclists = cyclistService.getCyclists();
+//
+//        // Vérifier si la liste est vide
+//        if (cyclists.isEmpty()) {
+//            System.out.println("No cyclists found in the system.");
+//        } else {
+//            // Afficher chaque cycliste
+//            cyclists.forEach(cyclist -> {
+//                System.out.println("Cyclist ID: " + cyclist.getId());
+//                System.out.println("First Name: " + cyclist.getFirstName());
+//                System.out.println("Last Name: " + cyclist.getLastName());
+//                System.out.println("Age: " + cyclist.getAge());
+//                System.out.println("Nationality: " + cyclist.getNationality());
+//                System.out.println("Team: " + cyclist.getTeam().getName());
+//                System.out.println("---------------------------------------");
+//            });
+//        }
+//    }
 
 
     public static void main(String[] args) {
@@ -460,9 +446,9 @@ public class App {
         TeamService teamService = context.getBean(TeamService.class);
 
         // Create a new team and save it
-        Team newTeam = new Team();
-        newTeam.setName("ssdssd");
-        teamService.createTeam(newTeam);
+//        Team newTeam = new Team();
+//        newTeam.setName("ssdssd");
+//        teamService.createTeam(newTeam);
 
         // Fetch and display all teams
 //        teamService.getAllTeam().forEach(team -> System.out.println("Team Name: " + team.getName()));
@@ -472,17 +458,13 @@ public class App {
 
 //        app.DeleteCompetition();
 //        app.updateCompetition();
-//        app.insertCyclist();
+        app.insertCyclist();
 
 //        app.deleteCyclist();
 
 //        app.updateCyclist();
 
 //        app.getAllCyclists();
-
-
-
-
 
 
     }

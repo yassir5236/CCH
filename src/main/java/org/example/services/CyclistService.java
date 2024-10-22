@@ -1,5 +1,6 @@
 package org.example.services;
 
+import org.example.dtos.CyclistDTO;
 import org.example.entity.Cyclist;
 
 import java.util.List;
@@ -7,13 +8,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CyclistService {
-    List<Cyclist> getCyclists();
+    List<CyclistDTO> getCyclists();
 
-    Optional<Cyclist> getCyclistById(UUID id);
+    CyclistDTO getCyclistById(UUID id);
 
-    Cyclist saveCyclist(Cyclist cyclist);
+    CyclistDTO saveCyclist(CyclistDTO cyclistDTO);
 
-    void updateCyclist(Cyclist cyclist);
+    CyclistDTO updateCyclist(UUID id, CyclistDTO cyclistDTO) ;
+
 
     void deleteCyclist(UUID id);
 }

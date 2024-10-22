@@ -13,6 +13,7 @@ import java.util.UUID;
 
 public record CyclistDTO(
 
+
         @NotBlank(message = "first name is required")
         String firstName,
 

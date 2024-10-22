@@ -46,13 +46,16 @@
 //}
 
 
-
-
-
 package org.example.services.Impl;
 
+import ch.qos.logback.core.testUtil.RandomUtil;
+import jakarta.persistence.EntityNotFoundException;
+import org.example.dtos.CyclistDTO;
 import org.example.entity.Cyclist;
+import org.example.entity.Team;
+import org.example.mapper.CyclistMapper;
 import org.example.repository.CyclistRepository;
+import org.example.repository.TeamRepository;
 import org.example.services.CyclistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,27 +63,79 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Service
-public class CyclistService {
+public class CyclistServiceImpl implements CyclistService {
 
-    @Autowired
-    private CyclistRepository cyclistRepository;
 
-    @Autowired
-    private CyclistMapper cyclistMapper;  // Mapper injecté
+    private final CyclistRepository cyclistRepository;
+    private final TeamRepository teamRepository;
+    private final  CyclistMapper cyclistMapper ;
+    private final TeamService teamService;
 
-    public CyclistDTO getCyclistById(Long id) {
-        Cyclist cyclist = cyclistRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cyclist not found"));
-        return cyclistMapper.toDto(cyclist);  // Conversion avec MapStruct
+    public CyclistServiceImpl(CyclistRepository cyclistRepository, TeamRepository teamRepository, CyclistMapper cyclistMapper , TeamService teamService) {
+        this.cyclistRepository = cyclistRepository;
+        this.teamRepository = teamRepository;
+        this.cyclistMapper = cyclistMapper;
+        this.teamService = teamService;
+
     }
 
-    public CyclistDTO createCyclist(CyclistDTO cyclistDTO) {
-        Cyclist cyclist = cyclistMapper.toEntity(cyclistDTO);  // Conversion avec MapStruct
+
+
+    @Override
+    public CyclistDTO getCyclistById(UUID id) {
+        Optional<Cyclist> cyclist = cyclistRepository.findById(id);
+        if (cyclist.isPresent()) {
+            return cyclistMapper.toDto(cyclist.get());
+
+        }
+        throw new EntityNotFoundException("Cyclist not found with id: " + id);
+
+    }
+
+
+    @Override
+    public CyclistDTO saveCyclist(CyclistDTO cyclistDTO) {
+        Team team = teamRepository.findById(cyclistDTO.teamId())
+                .orElseThrow(() -> new RuntimeException("this shit does not exist"));
+        Cyclist cyclist = cyclistMapper.toEntity(cyclistDTO);
+        cyclist.setTeam(team);
         return cyclistMapper.toDto(cyclistRepository.save(cyclist));
     }
 
-    // Autres méthodes...
+    @Override
+    public List<CyclistDTO> getCyclists() {
+        List<Cyclist> cyclists = cyclistRepository.findAll();
+        // Mapper chaque Cyclist vers un CyclistDTO
+        return cyclists.stream()
+                .map(cyclistMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public CyclistDTO updateCyclist(UUID id, CyclistDTO cyclistDTO) {
+        Cyclist existingCyclist = cyclistRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cyclist not found with id: " + id));
+
+        // Mettre à jour les champs de l'existant à partir du DTO
+        existingCyclist.setFirstName(cyclistDTO.firstName());
+        existingCyclist.setLastName(cyclistDTO.lastName());
+        existingCyclist.setNationality(cyclistDTO.nationality());
+        existingCyclist.setAge(cyclistDTO.age());
+        existingCyclist.setTeam(cyclistMapper.map(cyclistDTO.teamId(), teamService)); // Assurez-vous d'injecter TeamService ici si nécessaire
+
+        // Sauvegarder les modifications
+        return cyclistMapper.toDto(cyclistRepository.save(existingCyclist));
+    }
+
+    @Override
+    public void deleteCyclist(UUID id) {
+        cyclistRepository.deleteById(id);
+    }
+
+
 }
