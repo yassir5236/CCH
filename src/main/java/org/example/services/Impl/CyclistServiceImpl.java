@@ -109,7 +109,6 @@ public class CyclistServiceImpl implements CyclistService {
     @Override
     public List<CyclistDTO> getCyclists() {
         List<Cyclist> cyclists = cyclistRepository.findAll();
-        // Mapper chaque Cyclist vers un CyclistDTO
         return cyclists.stream()
                 .map(cyclistMapper::toDto)
                 .collect(Collectors.toList());
@@ -121,7 +120,6 @@ public class CyclistServiceImpl implements CyclistService {
         Cyclist existingCyclist = cyclistRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cyclist not found with id: " + id));
 
-        // Mettre à jour les champs de l'existant à partir du DTO
         existingCyclist.setFirstName(cyclistDTO.firstName());
         existingCyclist.setLastName(cyclistDTO.lastName());
         existingCyclist.setNationality(cyclistDTO.nationality());

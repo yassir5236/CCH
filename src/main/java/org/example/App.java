@@ -144,135 +144,135 @@ public class App {
 
     // Method to insert fake competitions for testing
     @Transactional
-    public void insertFakeCompetitions() {
-        try {
-            for (int i = 0; i < 5; i++) {
-                Competition competition = new Competition();
-                competition.setId(UUID.randomUUID());
-
-//                competition.set
-                competition.setDate(LocalDate.now().plusDays(ThreadLocalRandom.current().nextInt(1, 30)));
-                competition.setName("bbbbbbb ");
-
-                competition.setPlace("cccccccc ");
-                competition.setDistance(0.14);
-
-                competitionService.saveCompetition(competition);
-            }
-            System.out.println("Fake competitions inserted successfully!");
-        } catch (Exception e) {
-            System.err.println("Error inserting competitions: " + e.getMessage());
-        }
-    }
+//    public void insertFakeCompetitions() {
+//        try {
+//            for (int i = 0; i < 5; i++) {
+//                Competition competition = new Competition();
+//                competition.setId(UUID.randomUUID());
+//
+////                competition.set
+//                competition.setDate(LocalDate.now().plusDays(ThreadLocalRandom.current().nextInt(1, 30)));
+//                competition.setName("bbbbbbb ");
+//
+//                competition.setPlace("cccccccc ");
+//                competition.setDistance(0.14);
+//
+//                competitionService.saveCompetition(competition);
+//            }
+//            System.out.println("Fake competitions inserted successfully!");
+//        } catch (Exception e) {
+//            System.err.println("Error inserting competitions: " + e.getMessage());
+//        }
+//    }
 
     //     Method to display all competitions
-    public void displayAllCompetitions() {
-        List<Competition> competitions = competitionService.getAllCompetitions();
-        competitions.forEach(competition ->
-                System.out.println("Competition Name: " + competition.getName() + ", Place: " + competition.getPlace()));
-    }
-
-
-    public void updateCompetition() {
-        // Fetch all competitions
-        List<Competition> competitions = competitionService.getAllCompetitions();
-
-        // Display the competitions to the user
-        competitions.forEach(competition ->
-                System.out.println("Competition ID: " + competition.getId() +
-                        " | Name: " + competition.getName() +
-                        " | Place: " + competition.getPlace())
-        );
-
-        // Ask the user for the competition ID they want to update
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter competition ID to update: ");
-        String competitionIdStr = scanner.nextLine();
-
-        // Convert the entered ID to UUID
-        try {
-            UUID competitionId = UUID.fromString(competitionIdStr);
-
-            // Check if the competition exists
-            Optional<Competition> competitionOpt = competitionService.getCompetition(competitionId);
-            if (competitionOpt.isPresent()) {
-                Competition competition = competitionOpt.get();
-
-                // Prompt the user for new information
-                System.out.println("Enter new name (current: " + competition.getName() + "): ");
-                String newName = scanner.nextLine();
-                if (!newName.trim().isEmpty()) {
-                    competition.setName(newName);
-                }
-
-                System.out.println("Enter new place (current: " + competition.getPlace() + "): ");
-                String newPlace = scanner.nextLine();
-                if (!newPlace.trim().isEmpty()) {
-                    competition.setPlace(newPlace);
-                }
-
-                System.out.println("Enter new distance (current: " + competition.getDistance() + "): ");
-                String newDistanceStr = scanner.nextLine();
-                if (!newDistanceStr.trim().isEmpty()) {
-                    double newDistance = Double.parseDouble(newDistanceStr);
-                    competition.setDistance(newDistance);
-                }
-
-                System.out.println("Enter new date (current: " + competition.getDate() + ") [format: yyyy-MM-dd]: ");
-                String newDateStr = scanner.nextLine();
-                if (!newDateStr.trim().isEmpty()) {
-                    LocalDate newDate = LocalDate.parse(newDateStr);
-                    competition.setDate(newDate);
-                }
-
-                // Save the updated competition
-                competitionService.saveCompetition(competition);
-                System.out.println("Competition updated successfully.");
-
-            } else {
-                System.out.println("Competition with ID " + competitionId + " not found.");
-            }
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid competition ID format. Please enter a valid UUID.");
-        } catch (Exception e) {
-            System.out.println("An error occurred while updating the competition: " + e.getMessage());
-        }
-    }
-
-
-    public void DeleteCompetition() {
-        // Fetch all competitions
-        List<Competition> competitions = competitionService.getAllCompetitions();
-
-        // Display the competitions to the user
-        competitions.forEach(competition ->
-                System.out.println("Competition ID: " + competition.getId() +
-                        " | Name: " + competition.getName() +
-                        " | Place: " + competition.getPlace())
-        );
-
-        // Ask the user for the competition ID they want to delete
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter competition ID to delete: ");
-        String competitionIdStr = scanner.nextLine();
-
-        // Convert the entered ID to UUID
-        try {
-            UUID competitionId = UUID.fromString(competitionIdStr);
-
-            // Check if the competition exists
-            Optional<Competition> competitionOpt = competitionService.getCompetition(competitionId);
-            if (competitionOpt.isPresent()) {
-                // Delete the competition
-                competitionService.deleteCompetition(competitionId);
-                System.out.println("Competition deleted successfully.");
-            } else {
-                System.out.println("Competition with ID " + competitionId + " not found.");
-            }
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid competition ID format. Please enter a valid UUID.");
-        }
-    }
+//    public void displayAllCompetitions() {
+//        List<Competition> competitions = competitionService.getAllCompetitions();
+//        competitions.forEach(competition ->
+//                System.out.println("Competition Name: " + competition.getName() + ", Place: " + competition.getPlace()));
+//    }
+//
+//
+//    public void updateCompetition() {
+//        // Fetch all competitions
+//        List<Competition> competitions = competitionService.getAllCompetitions();
+//
+//        // Display the competitions to the user
+//        competitions.forEach(competition ->
+//                System.out.println("Competition ID: " + competition.getId() +
+//                        " | Name: " + competition.getName() +
+//                        " | Place: " + competition.getPlace())
+//        );
+//
+//        // Ask the user for the competition ID they want to update
+//        Scanner scanner = new Scanner(System.in);
+//        System.out.println("Enter competition ID to update: ");
+//        String competitionIdStr = scanner.nextLine();
+//
+//        // Convert the entered ID to UUID
+//        try {
+//            UUID competitionId = UUID.fromString(competitionIdStr);
+//
+//            // Check if the competition exists
+//            Optional<Competition> competitionOpt = competitionService.getCompetition(competitionId);
+//            if (competitionOpt.isPresent()) {
+//                Competition competition = competitionOpt.get();
+//
+//                // Prompt the user for new information
+//                System.out.println("Enter new name (current: " + competition.getName() + "): ");
+//                String newName = scanner.nextLine();
+//                if (!newName.trim().isEmpty()) {
+//                    competition.setName(newName);
+//                }
+//
+//                System.out.println("Enter new place (current: " + competition.getPlace() + "): ");
+//                String newPlace = scanner.nextLine();
+//                if (!newPlace.trim().isEmpty()) {
+//                    competition.setPlace(newPlace);
+//                }
+//
+//                System.out.println("Enter new distance (current: " + competition.getDistance() + "): ");
+//                String newDistanceStr = scanner.nextLine();
+//                if (!newDistanceStr.trim().isEmpty()) {
+//                    double newDistance = Double.parseDouble(newDistanceStr);
+//                    competition.setDistance(newDistance);
+//                }
+//
+//                System.out.println("Enter new date (current: " + competition.getDate() + ") [format: yyyy-MM-dd]: ");
+//                String newDateStr = scanner.nextLine();
+//                if (!newDateStr.trim().isEmpty()) {
+//                    LocalDate newDate = LocalDate.parse(newDateStr);
+//                    competition.setDate(newDate);
+//                }
+//
+//                // Save the updated competition
+//                competitionService.saveCompetition(competition);
+//                System.out.println("Competition updated successfully.");
+//
+//            } else {
+//                System.out.println("Competition with ID " + competitionId + " not found.");
+//            }
+//        } catch (IllegalArgumentException e) {
+//            System.out.println("Invalid competition ID format. Please enter a valid UUID.");
+//        } catch (Exception e) {
+//            System.out.println("An error occurred while updating the competition: " + e.getMessage());
+//        }
+//    }
+//
+//
+//    public void DeleteCompetition() {
+//        // Fetch all competitions
+//        List<Competition> competitions = competitionService.getAllCompetitions();
+//
+//        // Display the competitions to the user
+//        competitions.forEach(competition ->
+//                System.out.println("Competition ID: " + competition.getId() +
+//                        " | Name: " + competition.getName() +
+//                        " | Place: " + competition.getPlace())
+//        );
+//
+//        // Ask the user for the competition ID they want to delete
+//        Scanner scanner = new Scanner(System.in);
+//        System.out.println("Enter competition ID to delete: ");
+//        String competitionIdStr = scanner.nextLine();
+//
+//        // Convert the entered ID to UUID
+//        try {
+//            UUID competitionId = UUID.fromString(competitionIdStr);
+//
+//            // Check if the competition exists
+//            Optional<Competition> competitionOpt = competitionService.getCompetition(competitionId);
+//            if (competitionOpt.isPresent()) {
+//                // Delete the competition
+//                competitionService.deleteCompetition(competitionId);
+//                System.out.println("Competition deleted successfully.");
+//            } else {
+//                System.out.println("Competition with ID " + competitionId + " not found.");
+//            }
+//        } catch (IllegalArgumentException e) {
+//            System.out.println("Invalid competition ID format. Please enter a valid UUID.");
+//        }
+//    }
 
 
     public void insertCyclist() {

@@ -1,5 +1,7 @@
 package org.example.services;
 
+import org.example.dtos.CompetitionDTO;
+import org.example.dtos.GenaralResultDTO;
 import org.example.entity.Competition;
 import org.example.entity.Cyclist;
 
@@ -9,17 +11,17 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CompetitionService {
-    List<Competition> getAllCompetitions();
+    List<CompetitionDTO> getAllCompetitions();
 
-    Optional<Competition> getCompetition(UUID id);
+    Optional<CompetitionDTO> getCompetition(UUID id);
 
-    Competition saveCompetition(Competition competition);
+    CompetitionDTO saveCompetition(CompetitionDTO CompetitionDTO);
 
-    void updateCompetition(Competition competition);
+     CompetitionDTO updateCompetition(UUID id, CompetitionDTO competitionDTO);
 
     void deleteCompetition(UUID id);
 
-    void registerCyclistToCompetition(UUID cyclistId, UUID competitionId, int rank, Duration generalTime);
+    void registerCyclistToCompetition(GenaralResultDTO resultDTO);
 
     void removeCyclistFromCompetition(UUID cyclistId, UUID competitionId);
 
