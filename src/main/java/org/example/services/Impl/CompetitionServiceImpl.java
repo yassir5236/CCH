@@ -144,6 +144,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -185,6 +186,8 @@ public class CompetitionServiceImpl implements CompetitionService {
 
     @Override
     public CompetitionDTO saveCompetition(CompetitionDTO competitionDTO) {
+        validateCompetitionDates(competitionDTO.startDate(), competitionDTO.endDate());
+
         competitionRepository.save(competitionMapper.toEntity(competitionDTO));
         return competitionDTO;
     }
@@ -205,6 +208,8 @@ public class CompetitionServiceImpl implements CompetitionService {
         Optional<Competition> existingCompetitionOpt = competitionRepository.findById(id);
 
         if (existingCompetitionOpt.isPresent()) {
+            validateCompetitionDates(competitionDTO.startDate(), competitionDTO.endDate());
+
             Competition existingCompetition = existingCompetitionOpt.get();
             Competition updatedCompetition = competitionMapper.toEntity(competitionDTO);
             updatedCompetition.setId(existingCompetition.getId());
@@ -265,5 +270,10 @@ public class CompetitionServiceImpl implements CompetitionService {
     }
 
 
+    private void validateCompetitionDates(LocalDate start_date, LocalDate end_date) {
+        if(end_date.isBefore(start_date)){
+            throw new IllegalArgumentException("End date must be after the start date.");
+        }
+    }
 
 }

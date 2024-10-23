@@ -22,9 +22,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @ToString
 public class Competition implements Serializable {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.UUID)
-//    private UUID id;
+
 
     @Id
     @Column(name = "id", updatable = false, nullable = false)
@@ -34,9 +32,13 @@ public class Competition implements Serializable {
     @Column(name = "competition_name", nullable = false)
     private String name;
 
-    @NotNull(message = "Competition date is required")
-    @Column(name = "date", nullable = false)
-    private LocalDate date;
+    @NotNull(message = "Competition start_date is required")
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate;
+
+    @NotNull(message = "Competition end_date is required")
+    @Column(name = "end_date", nullable = false)
+    private LocalDate endDate;
 
     @NotBlank(message = "Place is required")
     @Column(name = "place", nullable = false)

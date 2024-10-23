@@ -16,8 +16,11 @@ public record CompetitionDTO(
         @NotBlank(message = "name is required ")
         String name,
 
-        @NotNull(message = "date is required")
-        LocalDate date,
+        @NotNull(message = "start_date is required")
+        LocalDate startDate,
+
+        @NotNull(message = "end_date is required")
+        LocalDate endDate,
 
         @NotBlank(message = "place is required")
         String place,
